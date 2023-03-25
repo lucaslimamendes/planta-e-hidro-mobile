@@ -1,14 +1,13 @@
 import 'react-native-gesture-handler';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
-import Routes from './src/routes';
+import { NavigationContainer } from '@react-navigation/native';
+import { StyleSheet } from 'react-native';
+import { MainStack } from './src/routes';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      { Routes() }
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      { MainStack() }
+    </NavigationContainer>
   );
 }
 
