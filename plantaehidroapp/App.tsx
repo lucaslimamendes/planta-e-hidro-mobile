@@ -6,16 +6,8 @@ import messaging from '@react-native-firebase/messaging';
 import { MainStack } from './src/routes';
 import { getFcmTokenFromLocalStorage } from './src/helper/getFmcToken';
 
-export default async function App() {
+export default function App(): JSX.Element {
   PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
-
-  const authStatus = await messaging().requestPermission();
-  const enabled =
-    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-    if (enabled)
-      console.log('Authorization status:', authStatus);
 
   const getToken = async () => {
     const token = await getFcmTokenFromLocalStorage();
@@ -36,11 +28,10 @@ export default async function App() {
 
     return unsubscribe;
   }, []);
-
-
+  
   return (
     <NavigationContainer>
       { MainStack() }
     </NavigationContainer>
   );
-}
+};
