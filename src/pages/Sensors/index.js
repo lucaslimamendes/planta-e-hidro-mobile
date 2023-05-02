@@ -1,11 +1,55 @@
-import { Text, Modal, ScrollView, View, StyleSheet} from 'react-native';
+import { Text, Modal, ScrollView, View, StyleSheet } from 'react-native';
 import { TextInput, Button, Card } from 'react-native-paper';
 import { useState, useEffect } from 'react';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
+export async function createTableSensor() {
+    return new Promise((resolve, reject) => {
+        const query = `CREATE TABLE IF NOT EXISTS tbSensores
+        (
+            Id integer primary key autoincrement,
+            Description text not null,
+            Number integer not null    
+        )`;
+
+        let dbCx = getDbConnection();
+
+        dbCx.transaction(tx => {
+            tx.executeSql(query);
+            resolve(true);
+        },
+            error => {
+                console.log(error);
+                resolve(false);
+            }
+        );
+    });
+};
+
+export function newSensor(sensor) {
+
+    return new Promise((resolve, reject) => {
+        let query = 'insert into tbSensores (id, description, number) values (?,?,?)';
+        let dbCx = getDbConnection();
+
+        dbCx.transaction(tx => {
+            tx.executeSql(query, [sensor.id, sensor.description, sensor.number],
+                (tx, resultado) => {
+                    resolve(resultado.rowsAffected > 0);
+                })
+        },
+            error => {
+                console.log('saving ' + error);
+                resolve(false);
+            }
+        )
+    }
+    );
+};
 
 export default function SensorScreen() {
     const [visible, setVisible] = useState(false);
+    const [visible1, setVisible1] = useState(false);
 
     const handleOpenModal = () => {
         setVisible(true);
@@ -13,6 +57,14 @@ export default function SensorScreen() {
 
     const handleCloseModal = () => {
         setVisible(false);
+    };
+
+    const handleOpenModal1 = () => {
+        setVisible1(true);
+    };
+
+    const handleCloseModal1 = () => {
+        setVisible1(false);
     };
 
     const [sensors, setSensorList] = useState([
@@ -52,12 +104,14 @@ export default function SensorScreen() {
     return (
 
         <ScrollView>
-            <Button title="Abrir Modal" onPress={handleOpenModal}> Abrir</Button>
+            <Button title="Abrir Modal" onPress={handleOpenModal}> Adicionar sensor</Button>
             <Modal visible={visible} animationType="slide">
                 <View style={styles.modal}>
+                    <Text style={styles.modalTitle}>Adicione o nome do sensor</Text>
+                    <TextInput style={{ width: '80%', marginBottom: 30 }} /*value={description}*/></TextInput>
                     <Text style={styles.modalTitle}>Adicione o id do sensor</Text>
-                    <TextInput></TextInput>
-                    <Button>Salvar</Button>
+                    <TextInput style={{ width: '80%' }} /* value={number}*/></TextInput>
+                    <Button onPress={newSensor}>Salvar</Button>
                     <Button title="Fechar" onPress={handleCloseModal} >Fechar</Button>
                 </View>
             </Modal>
@@ -80,12 +134,26 @@ export default function SensorScreen() {
                             </Text>
                         </Card.Content>
                         <Card.Actions>
-                            <Button onPress={() => { }}>
+                            <Button onPress={handleOpenModal1}>
                                 Gráfico
                             </Button>
-                            {/*<Button onPress={() => { }}>
-                                Explore
-                            </Button>*/}
+
+                            <Modal visible={visible1} animationType="slide">
+                                <View style={styles.modal}>
+                                    <Text style={styles.modalTitle}>Gráfico</Text>
+                                    <Text>
+                                        Valor atual: teste
+                                    </Text>
+                                    <Text>
+                                        Valor mínimo: teste
+                                    </Text>
+                                    <Text>
+                                        Valor máximo: teste
+                                    </Text>
+
+                                    <Button title="Fechar" onPress={handleCloseModal1} >Fechar</Button>
+                                </View>
+                            </Modal>
                         </Card.Actions>
                     </Card>
                 ))
