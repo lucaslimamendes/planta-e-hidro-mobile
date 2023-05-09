@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { Alert, PermissionsAndroid } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import messaging from '@react-native-firebase/messaging';
+import { AppProvider } from './src/context/appContext';
 import { MainStack } from './src/routes';
 import { getFcmTokenFromLocalStorage } from './src/helper/getFmcToken';
 
@@ -28,10 +29,10 @@ export default function App(): JSX.Element {
 
     return unsubscribe;
   }, []);
-  
+
   return (
-    <NavigationContainer>
-      { MainStack() }
-    </NavigationContainer>
+    <AppProvider>
+      <NavigationContainer>{MainStack()}</NavigationContainer>
+    </AppProvider>
   );
-};
+}

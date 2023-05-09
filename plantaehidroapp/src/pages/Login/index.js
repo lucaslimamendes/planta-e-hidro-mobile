@@ -1,6 +1,10 @@
+import React, { useContext } from 'react';
 import { Text, View, Button } from 'react-native';
+import { AppContext } from '../../context/appContext';
 
 export default function LoginScreen({ navigation }) {
+  const { setName } = useContext(AppContext);
+
   return (
     <View>
       <Text>LOGIN Screen!</Text>
@@ -10,7 +14,10 @@ export default function LoginScreen({ navigation }) {
       />
       <Button
         title="Go to Home"
-        onPress={() => navigation.navigate('HomeMyTabs')}
+        onPress={() => {
+          setName('Yidj Pijk');
+          navigation.navigate('HomeMyTabs');
+        }}
       />
     </View>
   );
