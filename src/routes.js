@@ -21,13 +21,13 @@ function MyTabs() {
 
           if (route.name === 'Home') {
             iconName = focused ? 'ios-home' : 'ios-home-outline';
-            size = 40;
+            size = 30;
           } else if (route.name === 'Sensores') {
             iconName = focused ? 'ios-hardware-chip-sharp' : 'ios-hardware-chip-outline';
-            size = 45;
+            size = 35;
           } else if (route.name === 'Alertas') {
             iconName = focused ? 'ios-notifications' : 'ios-notifications-outline';
-            size = 40;
+            size = 30;
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -35,7 +35,7 @@ function MyTabs() {
         tabBarActiveTintColor: 'green',
         tabBarInactiveTintColor: 'gray',
         tabBarStyle: {
-          height: 80
+          height: 60
         },
         tabBarLabelStyle: {
           fontSize: 20
