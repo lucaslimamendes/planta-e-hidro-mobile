@@ -5,6 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import messaging from '@react-native-firebase/messaging';
 import { AppProvider } from './src/context/appContext';
 import { MainStack } from './src/routes';
+import Loading from './src/components/Loading';
 import { getFcmTokenFromLocalStorage } from './src/helper/getFmcToken';
 
 export default function App(): JSX.Element {
@@ -32,6 +33,7 @@ export default function App(): JSX.Element {
 
   return (
     <AppProvider>
+      <Loading />
       <NavigationContainer>{MainStack()}</NavigationContainer>
     </AppProvider>
   );

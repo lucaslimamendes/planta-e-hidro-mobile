@@ -7,7 +7,7 @@ import logoImg from '../../assets/imgs/logoPlantaHidro.png';
 import styles from './styles';
 
 export default function HomeScreen({ navigation }) {
-  const { name } = useContext(AppContext);
+  const { setLoading } = useContext(AppContext);
 
   return (
     <ScrollView contentContainerStyle={styles.containerScroll}>

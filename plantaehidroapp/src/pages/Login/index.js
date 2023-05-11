@@ -6,7 +6,7 @@ import logoImg from '../../assets/imgs/logoPlantaHidro.png';
 import styles from './styles';
 
 export default function LoginScreen({ navigation }) {
-  const { setName } = useContext(AppContext);
+  const { setLoading } = useContext(AppContext);
 
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
