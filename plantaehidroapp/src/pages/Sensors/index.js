@@ -97,7 +97,7 @@ export default function SensorScreen() {
         </View>
       </Modal>
       {sensors.map((item, index) => (
-        <Card style={{ margin: 15 }}>
+        <Card style={{ margin: 15 }} key={item.id}>
           <Card.Title title={item.tipo} titleStyle={{ fontSize: 20 }} />
           <Card.Content>
             <Text>
