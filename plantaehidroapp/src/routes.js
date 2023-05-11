@@ -8,16 +8,39 @@ import HomeScreen from './pages/Home';
 import LoginScreen from './pages/Login';
 import RegisterScreen from './pages/Register';
 import SensorScreen from './pages/Sensors';
+import SensorsInternScreen from './pages/SensorsIntern';
 import NotificationScreen from './pages/Notifications';
 
 const Stack = createStackNavigator();
+const StackSensors = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const icons = {
   Home: 'home',
   Alertas: 'bell',
-  Sensores: 'microchip',
+  SensoresStack: 'microchip',
 };
+
+function SensorStack() {
+  return (
+    <StackSensors.Navigator
+      screenOptions={({ route }) => ({
+        headerTitleAlign: 'center',
+      })}
+    >
+      <StackSensors.Screen
+        name="Sensores"
+        options={{ headerLeft: null }}
+        component={SensorScreen}
+      />
+      <StackSensors.Screen
+        name="SensorsInternScreen"
+        component={SensorsInternScreen}
+        options={({ route }) => ({ title: route.params.title })}
+      />
+    </StackSensors.Navigator>
+  );
+}
 
 function MyTabs() {
   return (
@@ -42,9 +65,14 @@ function MyTabs() {
           fontSize: 16,
         },
         headerTitleAlign: 'center',
+        headerShown: route.name === 'SensoresStack' ? false : true,
       })}
     >
-      <Tab.Screen name="Sensores" component={SensorScreen} />
+      <Tab.Screen
+        name="SensoresStack"
+        options={{ tabBarLabel: 'Sensores' }}
+        component={SensorStack}
+      />
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Alertas" component={NotificationScreen} />
     </Tab.Navigator>

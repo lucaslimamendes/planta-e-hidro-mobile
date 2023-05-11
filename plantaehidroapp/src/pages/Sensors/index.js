@@ -1,28 +1,17 @@
-import React from 'react';
+/* eslint-disable react-native/no-inline-styles */
+import React, { useState, useEffect } from 'react';
 import { Text, Modal, ScrollView, View, StyleSheet } from 'react-native';
-import { TextInput, Button, Card } from 'react-native-paper';
-import { useState, useEffect } from 'react';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import {
+  TextInput,
+  Button,
+  Card,
+  Provider,
+  Portal,
+  Dialog,
+} from 'react-native-paper';
 
-export default function SensorScreen() {
-  const [visible, setVisible] = useState(false);
-  const [visible1, setVisible1] = useState(false);
-
-  const handleOpenModal = () => {
-    setVisible(true);
-  };
-
-  const handleCloseModal = () => {
-    setVisible(false);
-  };
-
-  const handleOpenModal1 = () => {
-    setVisible1(true);
-  };
-
-  const handleCloseModal1 = () => {
-    setVisible1(false);
-  };
-
+export default function SensorScreen({ navigation, route }) {
   const [sensors, setSensorList] = useState([
     {
       id: 1,
@@ -70,64 +59,161 @@ export default function SensorScreen() {
       fontWeight: 'bold',
       marginBottom: 10,
     },
+    positionButton: {
+      position: 'absolute',
+      top: 0,
+      right: 0,
+    },
+    createSensorButton: {
+      borderRadius: 20,
+      borderWidth: 1,
+      borderColor: '#000',
+      width: '50%',
+      alignSelf: 'center',
+      marginTop: '4%',
+    },
   });
+  const handleOpenModal1 = () => {
+    setVisible1(true);
+  };
 
+  const handleCloseModal1 = () => {
+    setVisible1(false);
+  };
+  const [visible1, setVisible1] = useState(false);
+  const [createNewSensor, setCreateNewSensor] = useState(false);
+  const [operation, setOperation] = useState('');
+  const [sensor, setSensor] = useState('');
+  const [sensorValue, setSensorValue] = useState('');
+  const [assureDeletion, setAssureDeletion] = useState(false);
   useEffect(() => {
     //loadFunction
   }, []);
+  function questionDeleteSensor() {
+    setAssureDeletion(true);
+  }
 
+  function deleteSensor() {
+    setAssureDeletion(false);
+  }
+  function cancelNewSensor() {
+    setCreateNewSensor(false);
+    setSensor('');
+    setOperation('');
+    setSensorValue('');
+  }
+  function saveNewSensor() {
+    let newSensor = {
+      sensorId: sensor,
+      operationValue: operation,
+      valueNumber: parseFloat(sensorValue),
+    };
+  }
   return (
-    <ScrollView>
-      <Button title="Abrir Modal" onPress={handleOpenModal}>
-        {' '}
-        Adicionar sensor
-      </Button>
-      <Modal visible={visible} animationType="slide">
-        <View style={styles.modal}>
-          <Text style={styles.modalTitle}>Adicione o nome do sensor</Text>
-          <TextInput
-            style={{ width: '80%', marginBottom: 30 }} /*value={description}*/
-          />
-          <Text style={styles.modalTitle}>Adicione o id do sensor</Text>
-          <TextInput style={{ width: '80%' }} /* value={number}*/ />
-          <Button onPress={() => {}}>Salvar</Button>
-          <Button title="Fechar" onPress={handleCloseModal}>
-            Fechar
-          </Button>
-        </View>
-      </Modal>
-      {sensors.map((item, index) => (
-        <Card style={{ margin: 15 }} key={item.id}>
-          <Card.Title title={item.tipo} titleStyle={{ fontSize: 20 }} />
-          <Card.Content>
-            <Text>
-              Valor atual: {item.valor} {item.unidade}
-            </Text>
-            <Text>
-              Valor mínimo: {item.minValue} {item.unidade}
-            </Text>
-            <Text>
-              Valor máximo: {item.maxValue} {item.unidade}
-            </Text>
-          </Card.Content>
-          <Card.Actions>
-            <Button onPress={handleOpenModal1}>Gráfico</Button>
+    <Provider>
+      <ScrollView>
+        <Portal>
+          <Dialog
+            visible={assureDeletion}
+            onDismiss={() => {
+              setAssureDeletion(false);
+            }}
+          >
+            <Dialog.Title>Atenção!</Dialog.Title>
+            <Dialog.Content>
+              <Text variant="bodyMedium">Deseja realmente apagar?</Text>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button
+                onPress={() => {
+                  setAssureDeletion(false);
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button
+                onPress={() => {
+                  deleteSensor();
+                }}
+              >
+                Apagar
+              </Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+        {!createNewSensor && (
+          <View>
+            <Button
+              style={styles.createSensorButton}
+              onPress={() => {
+                setCreateNewSensor(true);
+              }}
+            >
+              Adicionar Sensor
+            </Button>
+          </View>
+        )}
 
-            <Modal visible={visible1} animationType="slide">
-              <View style={styles.modal}>
-                <Text style={styles.modalTitle}>Gráfico</Text>
-                <Text>Valor atual: teste</Text>
-                <Text>Valor mínimo: teste</Text>
-                <Text>Valor máximo: teste</Text>
-
-                <Button title="Fechar" onPress={handleCloseModal1}>
-                  Fechar
-                </Button>
-              </View>
-            </Modal>
-          </Card.Actions>
-        </Card>
-      ))}
-    </ScrollView>
+        {createNewSensor && (
+          <Card style={{ margin: 15, backgroundColor: 'white' }}>
+            <Card.Title title="Novo Sensor" titleStyle={{ fontSize: 20 }} />
+            <Card.Content>
+              <TextInput mode="outlined" label="ID do sensor:" />
+            </Card.Content>
+            <Card.Actions>
+              <Button
+                onPress={() => {
+                  cancelNewSensor();
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button
+                onPress={() => {
+                  saveNewSensor();
+                }}
+              >
+                Salvar
+              </Button>
+            </Card.Actions>
+          </Card>
+        )}
+        {sensors.map((item, index) => (
+          <Card style={{ margin: 15 }} key={item.id}>
+            <Card.Title title={item.tipo} titleStyle={{ fontSize: 20 }} />
+            <Button
+              onPress={() => {
+                questionDeleteSensor();
+              }}
+              style={styles.positionButton}
+            >
+              <Icon name="trash" size={22} />
+            </Button>
+            <Card.Content>
+              <Text>
+                Valor atual: {item.valor} {item.unidade}
+              </Text>
+              <Text>
+                Valor mínimo: {item.minValue} {item.unidade}
+              </Text>
+              <Text>
+                Valor máximo: {item.maxValue} {item.unidade}
+              </Text>
+            </Card.Content>
+            <Card.Actions>
+              <Button
+                onPress={() =>
+                  navigation.navigate('SensorsInternScreen', {
+                    title: item.tipo,
+                  })
+                }
+              >
+                Gráfico
+              </Button>
+            </Card.Actions>
+          </Card>
+        ))}
+      </ScrollView>
+    </Provider>
   );
 }
