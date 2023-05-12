@@ -1,5 +1,5 @@
-import React, { useContext, useState } from 'react';
-import { Text, View, Button } from 'react-native';
+import React, { useContext } from 'react';
+import { View } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
 import { AppContext } from '../../context/appContext';
 import styles from './styles';

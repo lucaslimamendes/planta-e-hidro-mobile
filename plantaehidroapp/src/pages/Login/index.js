@@ -1,15 +1,43 @@
-import React, { useContext, useState } from 'react';
-import { View, ScrollView, Image } from 'react-native';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useContext, useState, useEffect } from 'react';
+import { View, ScrollView, Image, Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
+import messaging from '@react-native-firebase/messaging';
 import { AppContext } from '../../context/appContext';
 import logoImg from '../../assets/imgs/logoPlantaHidro.png';
 import styles from './styles';
+import { createLogin } from '../../services/user';
 
 export default function LoginScreen({ navigation }) {
-  const { setLoading } = useContext(AppContext);
+  const { setLoading, setTokenMsg, setName, setTokenJwt } =
+    useContext(AppContext);
 
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
+
+  const getTokenMsg = async () => {
+    const fcmToken = await messaging().getToken();
+    setTokenMsg(fcmToken);
+  };
+
+  useEffect(() => {
+    getTokenMsg();
+  }, []);
+
+  const handleLogin = async () => {
+    try {
+      const respData = await createLogin({ email, password, setLoading });
+
+      setName(respData.userName);
+      setTokenJwt(respData.token);
+      navigation.navigate('HomeMyTabs');
+    } catch (error) {
+      Alert.alert(
+        'Erro!',
+        'Falha no login, preencha todos os campos ou tente novamente mais tarde!'
+      );
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.containerScroll}>
@@ -35,9 +63,7 @@ export default function LoginScreen({ navigation }) {
           textColor="#fff"
           buttonColor="green"
           style={styles.button}
-          onPress={() => {
-            navigation.navigate('HomeMyTabs');
-          }}
+          onPress={() => handleLogin()}
         >
           Entrar
         </Button>

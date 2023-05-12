@@ -7,7 +7,7 @@ import logoImg from '../../assets/imgs/logoPlantaHidro.png';
 import styles from './styles';
 
 export default function HomeScreen({ navigation }) {
-  const { setLoading } = useContext(AppContext);
+  const { name } = useContext(AppContext);
 
   return (
     <ScrollView contentContainerStyle={styles.containerScroll}>
@@ -15,7 +15,7 @@ export default function HomeScreen({ navigation }) {
         <Image style={styles.imgLogo} source={logoImg} />
 
         <View style={styles.section}>
-          <Text style={styles.txt}>Olá, Jose Fernandes!</Text>
+          <Text style={styles.txt}>Olá, {name}!</Text>
           <Icon name="user" size={22} color="white" />
         </View>
         <View style={styles.section}>

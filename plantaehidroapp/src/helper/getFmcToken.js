@@ -2,7 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging from '@react-native-firebase/messaging';
 
 const getFcmTokenFromLocalStorage = async () => {
+  const newFcmToken = await messaging().getToken();
   const fcmtoken = await AsyncStorage.getItem('fcmtoken');
+  console.log('newFcmToken found', newFcmToken);
 
   if (!fcmtoken) {
     try {

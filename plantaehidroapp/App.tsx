@@ -6,25 +6,23 @@ import messaging from '@react-native-firebase/messaging';
 import { AppProvider } from './src/context/appContext';
 import { MainStack } from './src/routes';
 import Loading from './src/components/Loading';
-import { getFcmTokenFromLocalStorage } from './src/helper/getFmcToken';
+// import { getFcmTokenFromLocalStorage } from './src/helper/getFmcToken';
 
 export default function App(): JSX.Element {
   PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
 
-  const getToken = async () => {
-    const token = await getFcmTokenFromLocalStorage();
-    console.log('tokennnn', token);
-  };
+  // const getToken = async () => {
+  //   const token = await getFcmTokenFromLocalStorage();
+  //   console.log('tokennnn', token);
+  // };
 
   useEffect(() => {
-    getToken();
-
     messaging().setBackgroundMessageHandler(async remoteMessage => {
       console.log('Message handled in the background!', remoteMessage);
     });
 
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+      Alert.alert('Alerta chegou!', JSON.stringify(remoteMessage));
       console.log(JSON.stringify(remoteMessage));
     });
 
