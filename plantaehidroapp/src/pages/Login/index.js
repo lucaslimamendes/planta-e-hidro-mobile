@@ -9,7 +9,7 @@ import styles from './styles';
 import { createLogin } from '../../services/user';
 
 export default function LoginScreen({ navigation }) {
-  const { setLoading, setTokenMsg, setName, setTokenJwt } =
+  const { setLoading, setTokenMsg, setName, setTokenJwt, setUserId } =
     useContext(AppContext);
 
   const [email, setEmail] = useState();
@@ -30,6 +30,7 @@ export default function LoginScreen({ navigation }) {
 
       setName(respData.userName);
       setTokenJwt(respData.token);
+      setUserId(respData.userId);
       navigation.navigate('HomeMyTabs');
     } catch (error) {
       Alert.alert(

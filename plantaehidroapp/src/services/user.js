@@ -41,3 +41,28 @@ export const createLogin = async ({ email, password, setLoading }) => {
     throw new Error(error);
   }
 };
+
+export const updateUserNotify = async ({
+  userId,
+  notifyToken,
+  setLoading,
+  tokenJwt,
+}) => {
+  try {
+    const response = await axios.patch(
+      `${urlDefaul}/v1/users/${userId}`,
+      {
+        notifyToken,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${tokenJwt}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};

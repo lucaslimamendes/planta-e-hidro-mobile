@@ -1,6 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect } from 'react';
-import { Text, Modal, ScrollView, View, StyleSheet } from 'react-native';
+import React, { useContext, useEffect, useCallback, useState } from 'react';
+import { Text, ScrollView, View, Alert } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {
   TextInput,
@@ -10,105 +12,83 @@ import {
   Portal,
   Dialog,
 } from 'react-native-paper';
+import dayjs from 'dayjs';
+import { AppContext } from '../../context/appContext';
+import { getSensors, createSensor, deleteSensor } from '../../services/sensor';
+import { getDevice } from '../../services/helix';
+import styles from './styles';
 
-export default function SensorScreen({ navigation, route }) {
-  const [sensors, setSensorList] = useState([
-    {
-      id: 1,
-      tipo: 'Acidez',
-      unidade: 'pH',
-      valor: '7,5',
-      minValue: '6,5',
-      maxValue: '8,5',
-    },
-    {
-      id: 2,
-      tipo: 'Condutividade Elétrica',
-      unidade: 'μS/cm',
-      valor: '1,2',
-      minValue: '0,5',
-      maxValue: '2,5',
-    },
-    {
-      id: 3,
-      tipo: 'Temperatura',
-      unidade: '°C',
-      valor: '25',
-      minValue: '20',
-      maxValue: '30',
-    },
-  ]);
+export default function SensorScreen({ navigation }) {
+  const [sensorId, setSensorId] = useState('');
+  const [deleteSensorId, setDeleteSensorId] = useState('');
+  const { setLoading, tokenJwt, userId, sensors, setSensors } =
+    useContext(AppContext);
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    modal: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: 'white',
-      margin: 50,
-      borderRadius: 10,
-      padding: 20,
-    },
-    modalTitle: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      marginBottom: 10,
-    },
-    positionButton: {
-      position: 'absolute',
-      top: 0,
-      right: 0,
-    },
-    createSensorButton: {
-      borderRadius: 20,
-      borderWidth: 1,
-      borderColor: '#000',
-      width: '50%',
-      alignSelf: 'center',
-      marginTop: '4%',
-    },
-  });
-  const handleOpenModal1 = () => {
-    setVisible1(true);
+  const getInfoSensor = async () => {
+    try {
+      const respData = await getSensors({ setLoading, userId, tokenJwt });
+      console.log('respData', respData);
+      setSensors(respData);
+    } catch (error) {
+      Alert.alert(
+        'Erro!',
+        'Falha ao buscar sensores, tente novamente mais tarde!'
+      );
+    }
   };
 
-  const handleCloseModal1 = () => {
-    setVisible1(false);
-  };
-  const [visible1, setVisible1] = useState(false);
+  useFocusEffect(
+    useCallback(() => {
+      getInfoSensor();
+    }, [])
+  );
+
   const [createNewSensor, setCreateNewSensor] = useState(false);
-  const [operation, setOperation] = useState('');
-  const [sensor, setSensor] = useState('');
-  const [sensorValue, setSensorValue] = useState('');
   const [assureDeletion, setAssureDeletion] = useState(false);
-  useEffect(() => {
-    //loadFunction
-  }, []);
-  function questionDeleteSensor() {
-    setAssureDeletion(true);
-  }
 
-  function deleteSensor() {
-    setAssureDeletion(false);
-  }
-  function cancelNewSensor() {
+  const questionDeleteSensor = id => {
+    setAssureDeletion(true);
+    setDeleteSensorId(id);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      setAssureDeletion(false);
+      await deleteSensor({ setLoading, tokenJwt, sensorId: deleteSensorId });
+      setDeleteSensorId('');
+      getInfoSensor();
+    } catch (error) {
+      Alert.alert(
+        'Erro!',
+        'Falha ao excluir sensor, tente novamente mais tarde!'
+      );
+    }
+  };
+
+  const cancelNewSensor = () => {
     setCreateNewSensor(false);
-    setSensor('');
-    setOperation('');
-    setSensorValue('');
-  }
-  function saveNewSensor() {
-    let newSensor = {
-      sensorId: sensor,
-      operationValue: operation,
-      valueNumber: parseFloat(sensorValue),
-    };
-  }
+    setSensorId('');
+  };
+
+  const saveNewSensor = async () => {
+    try {
+      const respData = await getDevice({ setLoading, deviceId: sensorId });
+      await createSensor({
+        setLoading,
+        tokenJwt,
+        data: respData,
+      });
+      setSensorId('');
+      getInfoSensor();
+      cancelNewSensor();
+    } catch (error) {
+      Alert.alert(
+        'Erro!',
+        'Falha ao encontrar novo sensor, tente novamente mais tarde!'
+      );
+    }
+  };
+
   return (
     <Provider>
       <ScrollView>
@@ -133,7 +113,7 @@ export default function SensorScreen({ navigation, route }) {
               </Button>
               <Button
                 onPress={() => {
-                  deleteSensor();
+                  confirmDelete();
                 }}
               >
                 Apagar
@@ -158,7 +138,12 @@ export default function SensorScreen({ navigation, route }) {
           <Card style={{ margin: 15, backgroundColor: 'white' }}>
             <Card.Title title="Novo Sensor" titleStyle={{ fontSize: 20 }} />
             <Card.Content>
-              <TextInput mode="outlined" label="ID do sensor:" />
+              <TextInput
+                mode="outlined"
+                label="ID do sensor:"
+                onChangeText={text => setSensorId(text)}
+                value={sensorId}
+              />
             </Card.Content>
             <Card.Actions>
               <Button
@@ -178,41 +163,49 @@ export default function SensorScreen({ navigation, route }) {
             </Card.Actions>
           </Card>
         )}
-        {sensors.map((item, index) => (
-          <Card style={{ margin: 15 }} key={item.id}>
-            <Card.Title title={item.tipo} titleStyle={{ fontSize: 20 }} />
-            <Button
-              onPress={() => {
-                questionDeleteSensor();
-              }}
-              style={styles.positionButton}
-            >
-              <Icon name="trash" size={22} />
-            </Button>
-            <Card.Content>
-              <Text>
-                Valor atual: {item.valor} {item.unidade}
-              </Text>
-              <Text>
-                Valor mínimo: {item.minValue} {item.unidade}
-              </Text>
-              <Text>
-                Valor máximo: {item.maxValue} {item.unidade}
-              </Text>
-            </Card.Content>
-            <Card.Actions>
+        {sensors && sensors.length ? (
+          sensors.map((item, index) => (
+            <Card style={{ margin: 15 }} key={item._id}>
+              <Card.Title
+                title={item.sensorHelixDeviceId}
+                titleStyle={{ fontSize: 20 }}
+              />
               <Button
-                onPress={() =>
-                  navigation.navigate('SensorsInternScreen', {
-                    title: item.tipo,
-                  })
-                }
+                onPress={() => {
+                  questionDeleteSensor(item._id);
+                }}
+                style={styles.positionButton}
               >
-                Gráfico
+                <Icon name="trash" size={22} />
               </Button>
-            </Card.Actions>
+              <Card.Content>
+                <Text>ID: {item.sensorHelixEntityId}</Text>
+                <Text>Atributo: {item.sensorHelixAttr}</Text>
+                <Text>
+                  Criado em: {dayjs(item.createdAt).format('HH:mm DD/MM/YY')}
+                </Text>
+              </Card.Content>
+              <Card.Actions>
+                <Button
+                  onPress={() =>
+                    navigation.navigate('SensorsInternScreen', {
+                      title: item.tipo,
+                    })
+                  }
+                >
+                  Gráfico
+                </Button>
+              </Card.Actions>
+            </Card>
+          ))
+        ) : (
+          <Card style={{ margin: 30 }}>
+            <Card.Title
+              title="Nenhum sensor encontrado..."
+              titleStyle={{ fontSize: 16, textAlign: 'center' }}
+            />
           </Card>
-        ))}
+        )}
       </ScrollView>
     </Provider>
   );
