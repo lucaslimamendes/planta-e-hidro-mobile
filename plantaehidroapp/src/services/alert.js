@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-const urlDefaul = 'https://planta-e-hidro-api-lab.azurewebsites.net';
+const urlDefault = 'https://planta-e-hidro-api-lab.azurewebsites.net';
 
 export const getAlerts = async ({ userId, setLoading, tokenJwt }) => {
   try {
     setLoading(true);
-    const response = await axios.get(`${urlDefaul}/v1/alerts/${userId}`, {
+    const response = await axios.get(`${urlDefault}/v1/alerts/${userId}`, {
       headers: {
         Authorization: `Bearer ${tokenJwt}`,
       },

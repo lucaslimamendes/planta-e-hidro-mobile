@@ -12,11 +12,11 @@ import {
   Portal,
   Dialog,
 } from 'react-native-paper';
-import dayjs from 'dayjs';
 import { AppContext } from '../../context/appContext';
 import { getSensors, createSensor, deleteSensor } from '../../services/sensor';
 import { getDevice } from '../../services/helix';
 import styles from './styles';
+import adjustDate from '../../helper/adjustDate';
 
 export default function SensorScreen({ navigation }) {
   const [sensorId, setSensorId] = useState('');
@@ -27,9 +27,10 @@ export default function SensorScreen({ navigation }) {
   const getInfoSensor = async () => {
     try {
       const respData = await getSensors({ setLoading, userId, tokenJwt });
-      console.log('respData', respData);
+
       setSensors(respData);
     } catch (error) {
+      console.log('error', error);
       Alert.alert(
         'Erro!',
         'Falha ao buscar sensores, tente novamente mais tarde!'
@@ -181,9 +182,8 @@ export default function SensorScreen({ navigation }) {
               <Card.Content>
                 <Text>ID: {item.sensorHelixEntityId}</Text>
                 <Text>Atributo: {item.sensorHelixAttr}</Text>
-                <Text>
-                  Criado em: {dayjs(item.createdAt).format('HH:mm DD/MM/YY')}
-                </Text>
+                <Text>Valor atual: {item.currentVal}</Text>
+                <Text>Criado em: {adjustDate(item.createdAt)}</Text>
               </Card.Content>
               <Card.Actions>
                 <Button

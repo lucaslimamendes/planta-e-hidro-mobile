@@ -3,12 +3,18 @@ import React, { useEffect } from 'react';
 import { Alert, PermissionsAndroid } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import messaging from '@react-native-firebase/messaging';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 import { AppProvider } from './src/context/appContext';
 import { MainStack } from './src/routes';
 import Loading from './src/components/Loading';
 // import { getFcmTokenFromLocalStorage } from './src/helper/getFmcToken';
 
 export default function App(): JSX.Element {
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
+
   PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
 
   // const getToken = async () => {

@@ -27,6 +27,8 @@ export default function HomeScreen({ navigation }) {
 
   useEffect(() => {
     updateUserNotify({ userId, setLoading, notifyToken: tokenMsg, tokenJwt });
+    getInfoSensor();
+    getInfoAlerts();
   }, []);
 
   const getInfoSensor = async () => {
@@ -64,8 +66,6 @@ export default function HomeScreen({ navigation }) {
 
   useFocusEffect(
     useCallback(() => {
-      getInfoSensor();
-      getInfoAlerts();
       getInfoHelix();
     }, [])
   );
