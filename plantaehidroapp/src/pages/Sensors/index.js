@@ -189,7 +189,7 @@ export default function SensorScreen({ navigation }) {
                 <Button
                   onPress={() =>
                     navigation.navigate('SensorsInternScreen', {
-                      title: item.tipo,
+                      title: item.sensorHelixDeviceId,
                     })
                   }
                 >

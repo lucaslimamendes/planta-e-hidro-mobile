@@ -79,3 +79,32 @@ export const deleteSensor = async ({ sensorId, tokenJwt, setLoading }) => {
     throw new Error(error);
   }
 };
+
+export const getValues = async ({
+  sensorHelixDeviceId,
+  tokenJwt,
+  setLoading,
+  startDate,
+  endDate,
+}) => {
+  try {
+    setLoading(true);
+
+    let url = `${urlDefault}/v1/values/${sensorHelixDeviceId}`;
+    if (startDate && endDate) {
+      url = url + `?startDate=${startDate}&endDate=${endDate}`;
+    }
+
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${tokenJwt}`,
+      },
+    });
+
+    setLoading(false);
+    return response.data;
+  } catch (error) {
+    setLoading(false);
+    throw new Error(error);
+  }
+};

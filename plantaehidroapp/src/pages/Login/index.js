@@ -12,8 +12,8 @@ export default function LoginScreen({ navigation }) {
   const { setLoading, setTokenMsg, setName, setTokenJwt, setUserId } =
     useContext(AppContext);
 
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+  const [email, setEmail] = useState('lucalmendes9@gmail.com');
+  const [password, setPassword] = useState('admin123456');
 
   const getTokenMsg = async () => {
     const fcmToken = await messaging().getToken();
