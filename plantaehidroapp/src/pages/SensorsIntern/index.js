@@ -9,7 +9,7 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
-import { Button, Card } from 'react-native-paper';
+import { Button, Card, DefaultTheme } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
 import dayjs from 'dayjs';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -158,8 +158,12 @@ export default function SensorInternScreen({ route }) {
         </Button>
 
         {filterCard && (
-          <Card style={{ margin: 15, backgroundColor: 'white', width: '100%' }}>
+          <Card
+            style={{ margin: 15, backgroundColor: 'white', width: '100%' }}
+            theme={DefaultTheme}
+          >
             <Card.Content
+              theme={DefaultTheme}
               style={{
                 flexDirection: 'row',
                 flexWrap: 'wrap',
@@ -192,7 +196,7 @@ export default function SensorInternScreen({ route }) {
                 <Text>Hora final: {timeFinal || '-'}</Text>
               </TouchableOpacity>
             </Card.Content>
-            <Card.Actions>
+            <Card.Actions theme={DefaultTheme}>
               <TouchableOpacity
                 onPress={() => {
                   clearAll();

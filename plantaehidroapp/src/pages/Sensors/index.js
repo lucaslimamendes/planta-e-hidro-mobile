@@ -11,6 +11,7 @@ import {
   Provider,
   Portal,
   Dialog,
+  DefaultTheme,
 } from 'react-native-paper';
 import { AppContext } from '../../context/appContext';
 import { getSensors, createSensor, deleteSensor } from '../../services/sensor';
@@ -31,7 +32,7 @@ export default function SensorScreen({ navigation }) {
     try {
       const respData = await getSensors({ setLoading, userId, tokenJwt });
 
-      setSensors(respData);
+      setSensors([...respData]);
     } catch (error) {
       console.log('error', error);
       Alert.alert(
@@ -126,6 +127,7 @@ export default function SensorScreen({ navigation }) {
           <View>
             <Button
               style={styles.createSensorButton}
+              textColor="#fff"
               onPress={() => {
                 setCreateNewSensor(true);
               }}
@@ -136,18 +138,27 @@ export default function SensorScreen({ navigation }) {
         )}
 
         {createNewSensor && (
-          <Card style={{ margin: 15, backgroundColor: 'white' }}>
-            <Card.Title title="Novo Sensor" titleStyle={{ fontSize: 20 }} />
-            <Card.Content>
+          <Card
+            style={{ margin: 15, backgroundColor: 'white' }}
+            theme={DefaultTheme}
+          >
+            <Card.Title
+              title="Novo Sensor"
+              titleStyle={{ fontSize: 20 }}
+              theme={DefaultTheme}
+            />
+            <Card.Content theme={DefaultTheme}>
               <TextInput
                 mode="outlined"
                 label="ID do sensor:"
                 onChangeText={text => setSensorId(text)}
                 value={sensorId}
+                theme={DefaultTheme}
               />
             </Card.Content>
             <Card.Actions>
               <Button
+                textColor="#000"
                 onPress={() => {
                   cancelNewSensor();
                 }}
@@ -155,6 +166,8 @@ export default function SensorScreen({ navigation }) {
                 Cancelar
               </Button>
               <Button
+                textColor="#fff"
+                style={{ backgroundColor: '#008000' }}
                 onPress={() => {
                   saveNewSensor();
                 }}
@@ -166,8 +179,9 @@ export default function SensorScreen({ navigation }) {
         )}
         {sensors && sensors.length ? (
           sensors.map((item, index) => (
-            <Card style={{ margin: 15 }} key={item._id}>
+            <Card style={{ margin: 15 }} key={item._id} theme={DefaultTheme}>
               <Card.Title
+                theme={DefaultTheme}
                 title={item.sensorHelixDeviceId}
                 titleStyle={{ fontSize: 20 }}
               />
@@ -179,13 +193,13 @@ export default function SensorScreen({ navigation }) {
               >
                 <Icon name="trash" size={22} />
               </Button>
-              <Card.Content>
+              <Card.Content theme={DefaultTheme}>
                 <Text>ID: {item.sensorHelixEntityId}</Text>
                 <Text>Atributo: {item.sensorHelixAttr}</Text>
                 <Text>Valor atual: {item.currentVal}</Text>
                 <Text>Criado em: {adjustDate(item.createdAt)}</Text>
               </Card.Content>
-              <Card.Actions>
+              <Card.Actions theme={DefaultTheme}>
                 <Button
                   onPress={() =>
                     navigation.navigate('SensorsInternScreen', {
@@ -199,8 +213,9 @@ export default function SensorScreen({ navigation }) {
             </Card>
           ))
         ) : (
-          <Card style={{ margin: 30 }}>
+          <Card style={{ margin: 30 }} theme={DefaultTheme}>
             <Card.Title
+              theme={DefaultTheme}
               title="Nenhum sensor encontrado..."
               titleStyle={{ fontSize: 16, textAlign: 'center' }}
             />

@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState, useContext, useCallback } from 'react';
 import { Text, ScrollView, View, Alert } from 'react-native';
 import {
@@ -11,6 +11,7 @@ import {
   Provider,
   Portal,
   Dialog,
+  DefaultTheme,
 } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
 import DropDown from 'react-native-paper-dropdown';
@@ -24,7 +25,7 @@ const operationsList = [
   { value: '1', label: 'Maior' },
 ];
 
-export default function NotificationScreen() {
+export default function NotificationScreen({ navigation }) {
   const { setLoading, tokenJwt, userId, sensors, alerts, setAlerts } =
     useContext(AppContext);
 
@@ -51,22 +52,28 @@ export default function NotificationScreen() {
     }
   };
 
-  const getSensors = () => {
+  const getSensors = async rcvSensors => {
     const newSensors = [];
+    const useSensors = rcvSensors || sensors;
 
-    for (const [i, x] of sensors.entries()) {
+    for (const [i, x] of await useSensors.entries()) {
       newSensors.push({ label: x.sensorHelixDeviceId, value: x._id });
     }
 
-    setSensorsList(newSensors);
+    setSensorsList([...newSensors]);
   };
 
   useFocusEffect(
     useCallback(() => {
       getInfoAlerts();
-      getSensors();
+      cancelNewAlert();
     }, [])
   );
+
+  useEffect(() => {
+    getSensors(sensors);
+    cancelNewAlert();
+  }, [sensors]);
 
   const cancelNewAlert = () => {
     setCreateNewAlert(false);
@@ -139,6 +146,7 @@ export default function NotificationScreen() {
           <View>
             <Button
               style={styles.createAlertButton}
+              textColor="#fff"
               onPress={() => setCreateNewAlert(true)}
             >
               Criar alerta
@@ -147,9 +155,16 @@ export default function NotificationScreen() {
         )}
 
         {createNewAlert && (
-          <Card style={{ margin: 15, backgroundColor: 'white' }}>
-            <Card.Title title="Novo alerta" titleStyle={{ fontSize: 20 }} />
-            <Card.Content>
+          <Card
+            style={{ margin: 15, backgroundColor: 'white' }}
+            theme={DefaultTheme}
+          >
+            <Card.Title
+              theme={DefaultTheme}
+              title="Novo alerta"
+              titleStyle={{ fontSize: 20, color: '#000' }}
+            />
+            <Card.Content theme={DefaultTheme}>
               <DropDown
                 label={'Sensor:'}
                 mode={'outlined'}
@@ -159,12 +174,14 @@ export default function NotificationScreen() {
                 value={sensor}
                 setValue={setSensor}
                 list={sensorsList}
+                theme={DefaultTheme}
               />
               <Text>Operação:</Text>
               <SegmentedButtons
                 value={operation}
                 onValueChange={setOperation}
                 buttons={operationsList}
+                theme={DefaultTheme}
               />
               <TextInput
                 mode="outlined"
@@ -172,19 +189,29 @@ export default function NotificationScreen() {
                 keyboardType="number-pad"
                 onChangeText={text => setSensorValue(text)}
                 value={sensorValue}
+                theme={DefaultTheme}
               />
             </Card.Content>
-            <Card.Actions>
-              <Button onPress={() => cancelNewAlert()}>Cancelar</Button>
-              <Button onPress={() => saveNewAlert()}>Salvar</Button>
+            <Card.Actions theme={DefaultTheme}>
+              <Button onPress={() => cancelNewAlert()} textColor="#000">
+                Cancelar
+              </Button>
+              <Button
+                onPress={() => saveNewAlert()}
+                textColor="#fff"
+                style={{ backgroundColor: '#008000' }}
+              >
+                Salvar
+              </Button>
             </Card.Actions>
           </Card>
         )}
 
         {alerts && alerts.length ? (
           alerts.map((item, index) => (
-            <Card key={index} style={{ margin: 15 }}>
+            <Card key={index} style={{ margin: 15 }} theme={DefaultTheme}>
               <Card.Title
+                theme={DefaultTheme}
                 title={
                   sensors.find(x => {
                     return x._id === item.sensorId;
@@ -192,7 +219,7 @@ export default function NotificationScreen() {
                 }
                 titleStyle={{ fontSize: 20 }}
               />
-              <Card.Content>
+              <Card.Content theme={DefaultTheme}>
                 <Text>Id Fiware: {item.fiwareSubscriptionId}</Text>
                 <Text>
                   Atributo:{' '}
@@ -206,7 +233,7 @@ export default function NotificationScreen() {
                 <Text>Valor: {item.value}</Text>
                 <Text>Data de criação: {adjustDate(item.createdAt)}</Text>
               </Card.Content>
-              <Card.Actions>
+              <Card.Actions theme={DefaultTheme}>
                 <Button onPress={() => questionDeleteSensor(item._id)}>
                   Apagar
                 </Button>
@@ -214,10 +241,14 @@ export default function NotificationScreen() {
             </Card>
           ))
         ) : (
-          <Card style={{ margin: 30 }}>
+          <Card
+            style={{ margin: 30, backgroundColor: '#fff' }}
+            theme={DefaultTheme}
+          >
             <Card.Title
+              theme={DefaultTheme}
               title="Nenhum alerta encontrado..."
-              titleStyle={{ fontSize: 16, textAlign: 'center' }}
+              titleStyle={{ fontSize: 16, textAlign: 'center', color: '#000' }}
             />
           </Card>
         )}

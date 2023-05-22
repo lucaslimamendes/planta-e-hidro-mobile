@@ -28,7 +28,8 @@ const sensorsStyles = StyleSheet.create({
   createSensorButton: {
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#000',
+    borderColor: '#008000',
+    backgroundColor: '#008000',
     width: '50%',
     alignSelf: 'center',
     marginTop: '4%',

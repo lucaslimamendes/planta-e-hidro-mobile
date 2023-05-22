@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     marginTop: 15,
+    color: '#000',
   },
   btn: {
     marginTop: 10,
