@@ -83,13 +83,17 @@ export default function HomeScreen({ navigation }) {
           <Icon name="server" size={22} color="white" />
           <Text style={styles.txt}>
             Você tem {sensors.length}{' '}
-            {sensors.length > 1 ? 'sensores cadastrados' : 'sensor cadastrado'}
+            {sensors.length > 1 || sensors.length === 0
+              ? 'sensores cadastrados'
+              : 'sensor cadastrado'}
           </Text>
         </View>
         <View style={styles.section}>
           <Text style={styles.txt}>
             {alerts.length}{' '}
-            {alerts.length > 1 ? 'alertas estão ativos' : 'alerta está ativo'}{' '}
+            {alerts.length > 1 || alerts.length === 0
+              ? 'alertas estão ativos'
+              : 'alerta está ativo'}{' '}
             atualmente
           </Text>
           <Icon name="envelope" size={22} color="white" />

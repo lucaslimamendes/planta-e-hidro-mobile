@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import React, { useContext, useEffect, useCallback, useState } from 'react';
+import React, { useContext, useCallback, useState } from 'react';
 import { Text, ScrollView, View, Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -21,6 +21,9 @@ import adjustDate from '../../helper/adjustDate';
 export default function SensorScreen({ navigation }) {
   const [sensorId, setSensorId] = useState('');
   const [deleteSensorId, setDeleteSensorId] = useState('');
+  const [createNewSensor, setCreateNewSensor] = useState(false);
+  const [assureDeletion, setAssureDeletion] = useState(false);
+
   const { setLoading, tokenJwt, userId, sensors, setSensors } =
     useContext(AppContext);
 
@@ -43,9 +46,6 @@ export default function SensorScreen({ navigation }) {
       getInfoSensor();
     }, [])
   );
-
-  const [createNewSensor, setCreateNewSensor] = useState(false);
-  const [assureDeletion, setAssureDeletion] = useState(false);
 
   const questionDeleteSensor = id => {
     setAssureDeletion(true);

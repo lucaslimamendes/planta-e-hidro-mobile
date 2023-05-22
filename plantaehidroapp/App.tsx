@@ -28,7 +28,10 @@ export default function App(): JSX.Element {
     });
 
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      Alert.alert('Alerta chegou!', JSON.stringify(remoteMessage));
+      Alert.alert(
+        remoteMessage.notification?.title || 'Novo Alerta!',
+        remoteMessage.notification?.body
+      );
       console.log(JSON.stringify(remoteMessage));
     });
 

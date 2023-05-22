@@ -1,5 +1,8 @@
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
-import { Text, ScrollView, View } from 'react-native';
+import { useState, useContext, useCallback } from 'react';
+import { Text, ScrollView, View, Alert } from 'react-native';
 import {
   TextInput,
   Button,
@@ -9,89 +12,108 @@ import {
   Portal,
   Dialog,
 } from 'react-native-paper';
+import { useFocusEffect } from '@react-navigation/native';
 import DropDown from 'react-native-paper-dropdown';
-import { useState, useEffect } from 'react';
+import { AppContext } from '../../context/appContext';
+import { getAlerts, createAlert, deleteAlert } from '../../services/alert';
+import adjustDate from '../../helper/adjustDate';
 import styles from './styles';
 
+const operationsList = [
+  { value: '0', label: 'Menor' },
+  { value: '1', label: 'Maior' },
+];
+
 export default function NotificationScreen() {
-  const [sensorsList, setSensorsList] = useState([
-    { label: 'TDS', value: '1' },
-    { label: 'Humidade', value: '2' },
-    { label: 'Acidez', value: '3' },
-    { label: 'Temperatura', value: '4' },
-  ]);
-  const [notifications, setNotifications] = useState([
-    {
-      Id: 1,
-      IdFiware: '1',
-      User: 'Alberto',
-      Sensor: 'TDS',
-      Operation: 'maior',
-      Value: '8,5',
-      Unit: 'μS/cm',
-      LastSent: '05/05/2023',
-      CreatedDate: '28/08/2022',
-    },
-    {
-      Id: 2,
-      IdFiware: '2',
-      User: 'Bernardo',
-      Sensor: 'Acidez',
-      Operation: 'menor',
-      Value: '2,5',
-      Unit: 'pH',
-      LastSent: '02/05/2023',
-      CreatedDate: '15/07/2022',
-    },
-    {
-      Id: 3,
-      IdFiware: '3',
-      User: 'Carlos',
-      Sensor: 'Temperatura',
-      Operation: 'maior',
-      Value: '30',
-      Unit: '°C',
-      LastSent: '30/04/2023',
-      CreatedDate: '31/12/2022',
-    },
-  ]);
-  const [operationsList, setOperationsList] = useState([
-    { value: '0', label: 'Menor' },
-    { value: '1', label: 'Maior' },
-  ]);
+  const { setLoading, tokenJwt, userId, sensors, alerts, setAlerts } =
+    useContext(AppContext);
+
   const [createNewAlert, setCreateNewAlert] = useState(false);
   const [operation, setOperation] = useState('');
   const [showDropDown, setShowDropDown] = useState(false);
   const [sensor, setSensor] = useState('');
   const [sensorValue, setSensorValue] = useState('');
+  const [deleteAlertId, setDeleteAlertId] = useState('');
   const [assureDeletion, setAssureDeletion] = useState(false);
+  const [sensorsList, setSensorsList] = useState([]);
 
-  useEffect(() => {
-    //loadFunction
-  }, []);
+  const getInfoAlerts = async () => {
+    try {
+      const respData = await getAlerts({ setLoading, userId, tokenJwt });
 
-  function cancelNewAlert() {
+      setAlerts(respData);
+    } catch (error) {
+      console.log('error', error);
+      Alert.alert(
+        'Erro!',
+        'Falha ao buscar alertas, tente novamente mais tarde!'
+      );
+    }
+  };
+
+  const getSensors = () => {
+    const newSensors = [];
+
+    for (const [i, x] of sensors.entries()) {
+      newSensors.push({ label: x.sensorHelixDeviceId, value: x._id });
+    }
+
+    setSensorsList(newSensors);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      getInfoAlerts();
+      getSensors();
+    }, [])
+  );
+
+  const cancelNewAlert = () => {
     setCreateNewAlert(false);
     setSensor('');
     setOperation('');
     setSensorValue('');
-  }
+  };
 
-  function saveNewAlert() {
-    let newAlert = {
-      sensorId: sensor,
-      operationValue: operation,
-      valueNumber: parseFloat(sensorValue),
-    };
-  }
+  const saveNewAlert = async () => {
+    try {
+      await createAlert({
+        setLoading,
+        tokenJwt,
+        data: {
+          sensorId: sensor,
+          value: sensorValue,
+          lessOrGreater: operation,
+        },
+      });
+      getInfoAlerts();
+      cancelNewAlert();
+    } catch (error) {
+      Alert.alert(
+        'Erro!',
+        'Falha ao adicionar novo alerta, tente novamente mais tarde!'
+      );
+    }
+  };
 
-  function questionDeleteSensor() {
+  const questionDeleteSensor = alertId => {
+    setDeleteAlertId(alertId);
     setAssureDeletion(true);
-  }
+  };
 
-  function deleteSensor() {
-    setAssureDeletion(false);
-  }
+  const deleteSensor = async id => {
+    try {
+      await deleteAlert({ setLoading, tokenJwt, alertId: deleteAlertId });
+      setDeleteAlertId('');
+      getInfoAlerts();
+      setAssureDeletion(false);
+    } catch (error) {
+      Alert.alert(
+        'Erro!',
+        'Falha ao excluir alerta, tente novamente mais tarde!'
+      );
+    }
+  };
 
   return (
     <Provider>
@@ -107,20 +129,8 @@ export default function NotificationScreen() {
             <Text variant="bodyMedium">Deseja realmente apagar?</Text>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button
-              onPress={() => {
-                setAssureDeletion(false);
-              }}
-            >
-              Cancelar
-            </Button>
-            <Button
-              onPress={() => {
-                deleteSensor();
-              }}
-            >
-              Apagar
-            </Button>
+            <Button onPress={() => setAssureDeletion(false)}>Cancelar</Button>
+            <Button onPress={() => deleteSensor(deleteAlertId)}>Apagar</Button>
           </Dialog.Actions>
         </Dialog>
       </Portal>
@@ -129,9 +139,7 @@ export default function NotificationScreen() {
           <View>
             <Button
               style={styles.createAlertButton}
-              onPress={() => {
-                setCreateNewAlert(true);
-              }}
+              onPress={() => setCreateNewAlert(true)}
             >
               Criar alerta
             </Button>
@@ -167,47 +175,52 @@ export default function NotificationScreen() {
               />
             </Card.Content>
             <Card.Actions>
-              <Button
-                onPress={() => {
-                  cancelNewAlert();
-                }}
-              >
-                Cancelar
-              </Button>
-              <Button
-                onPress={() => {
-                  saveNewAlert();
-                }}
-              >
-                Salvar
-              </Button>
+              <Button onPress={() => cancelNewAlert()}>Cancelar</Button>
+              <Button onPress={() => saveNewAlert()}>Salvar</Button>
             </Card.Actions>
           </Card>
         )}
 
-        {notifications.map((item, index) => (
-          <Card key={item.Id} style={{ margin: 15 }}>
-            <Card.Title title={item.Sensor} titleStyle={{ fontSize: 20 }} />
-            <Card.Content>
-              <Text>Id Fiware: {item.IdFiware}</Text>
-              <Text>Usuário: {item.User}</Text>
-              <Text>Sensor: {item.Sensor}</Text>
-              <Text>Operação: {item.Operation}</Text>
-              <Text>Valor: {item.Value}</Text>
-              <Text>Data de criação: {item.CreatedDate}</Text>
-            </Card.Content>
-            <Card.Actions>
-              <Button onPress={() => {}}>Editar</Button>
-              <Button
-                onPress={() => {
-                  questionDeleteSensor();
-                }}
-              >
-                Apagar
-              </Button>
-            </Card.Actions>
+        {alerts && alerts.length ? (
+          alerts.map((item, index) => (
+            <Card key={index} style={{ margin: 15 }}>
+              <Card.Title
+                title={
+                  sensors.find(x => {
+                    return x._id === item.sensorId;
+                  })?.sensorHelixDeviceId
+                }
+                titleStyle={{ fontSize: 20 }}
+              />
+              <Card.Content>
+                <Text>Id Fiware: {item.fiwareSubscriptionId}</Text>
+                <Text>
+                  Atributo:{' '}
+                  {
+                    sensors.find(x => {
+                      return x._id === item.sensorId;
+                    })?.sensorHelixEntityType
+                  }
+                </Text>
+                <Text>Operação: {item.lessOrGreater ? 'maior' : 'menor'}</Text>
+                <Text>Valor: {item.value}</Text>
+                <Text>Data de criação: {adjustDate(item.createdAt)}</Text>
+              </Card.Content>
+              <Card.Actions>
+                <Button onPress={() => questionDeleteSensor(item._id)}>
+                  Apagar
+                </Button>
+              </Card.Actions>
+            </Card>
+          ))
+        ) : (
+          <Card style={{ margin: 30 }}>
+            <Card.Title
+              title="Nenhum alerta encontrado..."
+              titleStyle={{ fontSize: 16, textAlign: 'center' }}
+            />
           </Card>
-        ))}
+        )}
       </ScrollView>
     </Provider>
   );
