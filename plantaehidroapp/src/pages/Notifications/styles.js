@@ -10,6 +10,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: '4%',
   },
+  txt: {
+    color: '#4a4242',
+  },
 });
 
 export default styles;

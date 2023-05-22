@@ -175,6 +175,7 @@ export default function NotificationScreen({ navigation }) {
                 setValue={setSensor}
                 list={sensorsList}
                 theme={DefaultTheme}
+                dropDownItemTextStyle={{ color: '#000' }}
               />
               <Text>Operação:</Text>
               <SegmentedButtons
@@ -217,11 +218,13 @@ export default function NotificationScreen({ navigation }) {
                     return x._id === item.sensorId;
                   })?.sensorHelixDeviceId
                 }
-                titleStyle={{ fontSize: 20 }}
+                titleStyle={{ fontSize: 20, color: '#000' }}
               />
               <Card.Content theme={DefaultTheme}>
-                <Text>Id Fiware: {item.fiwareSubscriptionId}</Text>
-                <Text>
+                <Text style={styles.txt}>
+                  Id Fiware: {item.fiwareSubscriptionId}
+                </Text>
+                <Text style={styles.txt}>
                   Atributo:{' '}
                   {
                     sensors.find(x => {
@@ -229,12 +232,19 @@ export default function NotificationScreen({ navigation }) {
                     })?.sensorHelixEntityType
                   }
                 </Text>
-                <Text>Operação: {item.lessOrGreater ? 'maior' : 'menor'}</Text>
-                <Text>Valor: {item.value}</Text>
-                <Text>Data de criação: {adjustDate(item.createdAt)}</Text>
+                <Text style={styles.txt}>
+                  Operação: {item.lessOrGreater ? 'maior' : 'menor'}
+                </Text>
+                <Text style={styles.txt}>Valor: {item.value}</Text>
+                <Text style={styles.txt}>
+                  Data de criação: {adjustDate(item.createdAt)}
+                </Text>
               </Card.Content>
               <Card.Actions theme={DefaultTheme}>
-                <Button onPress={() => questionDeleteSensor(item._id)}>
+                <Button
+                  onPress={() => questionDeleteSensor(item._id)}
+                  textColor="#008000"
+                >
                   Apagar
                 </Button>
               </Card.Actions>

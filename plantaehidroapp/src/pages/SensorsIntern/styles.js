@@ -30,6 +30,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     margin: 5,
   },
+  txt: {
+    color: '#4a4242',
+  },
 });
 
 export default styles;

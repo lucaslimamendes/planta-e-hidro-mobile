@@ -175,25 +175,29 @@ export default function SensorInternScreen({ route }) {
                 style={styles.btnFilter}
                 onPress={() => setIsPickerShowInital(true)}
               >
-                <Text>Data inicial: {dateInitial || '-'}</Text>
+                <Text style={styles.txt}>
+                  Data inicial: {dateInitial || '-'}
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.btnFilter}
                 onPress={() => setIsPickerShowTimeInitial(true)}
               >
-                <Text>Hora inicial: {timeInital || '-'}</Text>
+                <Text style={styles.txt}>
+                  Hora inicial: {timeInital || '-'}
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.btnFilter}
                 onPress={() => setIsPickerShowFinal(true)}
               >
-                <Text>Data final: {dateFinal || '-'}</Text>
+                <Text style={styles.txt}>Data final: {dateFinal || '-'}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.btnFilter}
                 onPress={() => setIsPickerShowTimeFinal(true)}
               >
-                <Text>Hora final: {timeFinal || '-'}</Text>
+                <Text style={styles.txt}>Hora final: {timeFinal || '-'}</Text>
               </TouchableOpacity>
             </Card.Content>
             <Card.Actions theme={DefaultTheme}>

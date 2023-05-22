@@ -144,7 +144,7 @@ export default function SensorScreen({ navigation }) {
           >
             <Card.Title
               title="Novo Sensor"
-              titleStyle={{ fontSize: 20 }}
+              titleStyle={{ fontSize: 20, color: '#000' }}
               theme={DefaultTheme}
             />
             <Card.Content theme={DefaultTheme}>
@@ -183,7 +183,7 @@ export default function SensorScreen({ navigation }) {
               <Card.Title
                 theme={DefaultTheme}
                 title={item.sensorHelixDeviceId}
-                titleStyle={{ fontSize: 20 }}
+                titleStyle={{ fontSize: 20, color: '#000' }}
               />
               <Button
                 onPress={() => {
@@ -194,10 +194,12 @@ export default function SensorScreen({ navigation }) {
                 <Icon name="trash" size={22} />
               </Button>
               <Card.Content theme={DefaultTheme}>
-                <Text>ID: {item.sensorHelixEntityId}</Text>
-                <Text>Atributo: {item.sensorHelixAttr}</Text>
-                <Text>Valor atual: {item.currentVal}</Text>
-                <Text>Criado em: {adjustDate(item.createdAt)}</Text>
+                <Text style={styles.txt}>ID: {item.sensorHelixEntityId}</Text>
+                <Text style={styles.txt}>Atributo: {item.sensorHelixAttr}</Text>
+                <Text style={styles.txt}>Valor atual: {item.currentVal}</Text>
+                <Text style={styles.txt}>
+                  Criado em: {adjustDate(item.createdAt)}
+                </Text>
               </Card.Content>
               <Card.Actions theme={DefaultTheme}>
                 <Button
@@ -206,6 +208,8 @@ export default function SensorScreen({ navigation }) {
                       title: item.sensorHelixDeviceId,
                     })
                   }
+                  style={{ backgroundColor: '#008000' }}
+                  textColor="#fff"
                 >
                   Gráfico
                 </Button>
@@ -213,11 +217,14 @@ export default function SensorScreen({ navigation }) {
             </Card>
           ))
         ) : (
-          <Card style={{ margin: 30 }} theme={DefaultTheme}>
+          <Card
+            style={{ margin: 30, backgroundColor: '#fff' }}
+            theme={DefaultTheme}
+          >
             <Card.Title
               theme={DefaultTheme}
               title="Nenhum sensor encontrado..."
-              titleStyle={{ fontSize: 16, textAlign: 'center' }}
+              titleStyle={{ fontSize: 16, textAlign: 'center', color: '#000' }}
             />
           </Card>
         )}
